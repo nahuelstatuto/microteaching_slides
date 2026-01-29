@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Microteaching -- Nahuel Statuto</title>
 
-  <!-- Reveal.js (CDN) -->
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/reveal.css">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js/dist/theme/white.css" id="theme">
+  <!-- Reveal.js (CDN) - FIJADO A v4 (compatible con multiplex master.js/client.js) -->
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/reveal.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/theme/white.css" id="theme">
 
   <style>
     :root { --accent: #1f6feb; }
@@ -299,16 +299,17 @@
 
 <div class="footer">Microteaching · k-means · reveal.js</div>
 
-<script src="https://unpkg.com/reveal.js/dist/reveal.js"></script>
-<script src="https://unpkg.com/reveal.js/plugin/notes/notes.js"></script>
+<!-- Reveal.js (v4) -->
+<script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
+<script src="https://unpkg.com/reveal.js@4/plugin/notes/notes.js"></script>
 
+<!-- Multiplex (un solo init) -->
 <script>
   const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
   const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
   const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905"; // solo master
 
-  const params = new URLSearchParams(window.location.search);
-  const isMaster = params.has("master");
+  const isMaster = new URLSearchParams(window.location.search).has("master");
 
   function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -329,7 +330,7 @@
       // 2) master.js o client.js (del server multiplex)
       await loadScript(isMaster ? `${MULTIPLEX_URL}master.js` : `${MULTIPLEX_URL}client.js`);
 
-      // 3) UN SOLO initialize con TODO (incluyendo multiplex)
+      // 3) UN SOLO initialize con multiplex + tu config
       Reveal.initialize({
         hash: true,
         slideNumber: true,
@@ -348,7 +349,7 @@
       console.log("[multiplex]", isMaster ? "MASTER" : "CLIENT", "id=", MULTIPLEX_ID);
     } catch (e) {
       console.error("[multiplex] Error:", e);
-      // Fallback: al menos que la presentación funcione sin multiplex
+      // Fallback: que al menos funcione sin multiplex
       Reveal.initialize({
         hash: true,
         slideNumber: true,
@@ -360,6 +361,5 @@
     }
   });
 </script>
-
 </body>
 </html>
