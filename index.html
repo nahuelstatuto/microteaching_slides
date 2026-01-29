@@ -316,28 +316,50 @@
       s.src = src;
       s.async = true;
       s.onload = resolve;
-      s.onerror = reject;
+      s.onerror = () => reject(new Error("No se pudo cargar: " + src));
       document.head.appendChild(s);
     });
   }
 
-  (async () => {
-    // 1) socket.io
-    await loadScript(`${MULTIPLEX_URL}socket.io/socket.io.js`);
+  window.addEventListener("load", async () => {
+    try {
+      // 1) socket.io (del server multiplex)
+      await loadScript(`${MULTIPLEX_URL}socket.io/socket.io.js`);
 
-    // 2) master.js o client.js
-    await loadScript(isMaster ? `${MULTIPLEX_URL}master.js` : `${MULTIPLEX_URL}client.js`);
+      // 2) master.js o client.js (del server multiplex)
+      await loadScript(isMaster ? `${MULTIPLEX_URL}master.js` : `${MULTIPLEX_URL}client.js`);
 
-    // 3) arranca Reveal
-    Reveal.initialize({
-      // ... TU CONFIG ACTUAL ...
-      multiplex: {
-        secret: isMaster ? MULTIPLEX_SECRET : null,
-        id: MULTIPLEX_ID,
-        url: MULTIPLEX_URL
-      }
-    });
-  })();
+      // 3) UN SOLO initialize con TODO (incluyendo multiplex)
+      Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        controls: true,
+        progress: true,
+        transition: "slide",
+        plugins: [ RevealNotes ],
+
+        multiplex: {
+          secret: isMaster ? MULTIPLEX_SECRET : null,
+          id: MULTIPLEX_ID,
+          url: MULTIPLEX_URL
+        }
+      });
+
+      console.log("[multiplex]", isMaster ? "MASTER" : "CLIENT", "id=", MULTIPLEX_ID);
+    } catch (e) {
+      console.error("[multiplex] Error:", e);
+      // Fallback: al menos que la presentación funcione sin multiplex
+      Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        controls: true,
+        progress: true,
+        transition: "slide",
+        plugins: [ RevealNotes ]
+      });
+    }
+  });
 </script>
+
 </body>
 </html>
