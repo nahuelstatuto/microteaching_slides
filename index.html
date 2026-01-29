@@ -6,8 +6,9 @@
   <title>Microteaching -- Nahuel Statuto</title>
 
   <!-- Reveal.js (CDN) - FIJADO A v4 (compatible con multiplex master.js/client.js) -->
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/reveal.css">
-  <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/theme/white.css" id="theme">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/reveal.css">
+<link rel="stylesheet" href="https://unpkg.com/reveal.js@3.9.2/css/theme/white.css" id="theme">
+
 
   <style>
     :root { --accent: #1f6feb; }
@@ -299,67 +300,37 @@
 
 <div class="footer">Microteaching · k-means · reveal.js</div>
 
-<!-- Reveal.js (v4) -->
-<script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
-<script src="https://unpkg.com/reveal.js@4/plugin/notes/notes.js"></script>
+<script src="https://unpkg.com/reveal.js@3.9.2/js/reveal.js"></script>
+<script src="https://unpkg.com/reveal.js@3.9.2/plugin/notes/notes.js"></script>
 
-<!-- Multiplex (un solo init) -->
 <script>
-  const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
-  const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
-  const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905"; // solo master
+  var MULTIPLEX_URL = "https://multiplex.up.railway.app/";
+  var MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
+  var MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905"; // solo master
+  var isMaster = window.location.search.indexOf("master") !== -1;
 
-  const isMaster = new URLSearchParams(window.location.search).has("master");
+  Reveal.initialize({
+    hash: true,
+    slideNumber: true,
+    controls: true,
+    progress: true,
+    transition: "slide",
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.async = true;
-      s.onload = resolve;
-      s.onerror = () => reject(new Error("No se pudo cargar: " + src));
-      document.head.appendChild(s);
-    });
-  }
+    multiplex: {
+      secret: isMaster ? MULTIPLEX_SECRET : null,
+      id: MULTIPLEX_ID,
+      url: MULTIPLEX_URL
+    },
 
-  window.addEventListener("load", async () => {
-    try {
-      // 1) socket.io (del server multiplex)
-      await loadScript(`${MULTIPLEX_URL}socket.io/socket.io.js`);
-
-      // 2) master.js o client.js (del server multiplex)
-      await loadScript(isMaster ? `${MULTIPLEX_URL}master.js` : `${MULTIPLEX_URL}client.js`);
-
-      // 3) UN SOLO initialize con multiplex + tu config
-      Reveal.initialize({
-        hash: true,
-        slideNumber: true,
-        controls: true,
-        progress: true,
-        transition: "slide",
-        plugins: [ RevealNotes ],
-
-        multiplex: {
-          secret: isMaster ? MULTIPLEX_SECRET : null,
-          id: MULTIPLEX_ID,
-          url: MULTIPLEX_URL
-        }
-      });
-
-      console.log("[multiplex]", isMaster ? "MASTER" : "CLIENT", "id=", MULTIPLEX_ID);
-    } catch (e) {
-      console.error("[multiplex] Error:", e);
-      // Fallback: que al menos funcione sin multiplex
-      Reveal.initialize({
-        hash: true,
-        slideNumber: true,
-        controls: true,
-        progress: true,
-        transition: "slide",
-        plugins: [ RevealNotes ]
-      });
-    }
+    dependencies: [
+      { src: MULTIPLEX_URL + "socket.io/socket.io.js", async: true },
+      { src: MULTIPLEX_URL + (isMaster ? "master.js" : "client.js"), async: true },
+      { src: "https://unpkg.com/reveal.js@3.9.2/plugin/notes/notes.js", async: true }
+    ]
   });
+
+  console.log("[multiplex]", isMaster ? "MASTER" : "CLIENT", "id=", MULTIPLEX_ID);
 </script>
+
 </body>
 </html>
