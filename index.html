@@ -51,7 +51,8 @@
 <script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
 <script src="https://unpkg.com/reveal.js@4/plugin/notes/notes.js"></script>
 
-<script>const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
+<script>
+const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
 const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
 const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
 
@@ -62,7 +63,8 @@ function initMultiplex() {
   script.src = `${MULTIPLEX_URL}socket.io/socket.io.js`;
   
   script.onload = () => {
-    const socket = io.connect(MULTIPLEX_URL);
+    // Forzamos conexión limpia
+    const socket = io.connect(MULTIPLEX_URL, { forceNew: true });
 
     Reveal.initialize({
       hash: true,
@@ -71,18 +73,18 @@ function initMultiplex() {
     }).then(() => {
       
       if (isMaster) {
-        console.log("🚀 MASTER: Enviando señales...");
+        console.log("🚀 MASTER: Conectado. Enviando señales...");
         
         const sendUpdate = () => {
           const state = Reveal.getState();
-          // Añadimos el ID y Secret dentro del mismo objeto
           state.id = MULTIPLEX_ID;
           state.secret = MULTIPLEX_SECRET;
           
           socket.emit('multiplex-statechanged', state);
-          // Por si el servidor usa el nombre de evento antiguo:
-          socket.emit('multiplex', state); 
         };
+
+        // Enviar estado inicial tras un breve delay para que el server nos registre
+        setTimeout(sendUpdate, 1000);
 
         Reveal.on('slidechanged', sendUpdate);
         Reveal.on('fragmentshown', sendUpdate);
@@ -91,10 +93,8 @@ function initMultiplex() {
         console.log("📱 CLIENTE: Esperando señales...");
         
         socket.on(MULTIPLEX_ID, (data) => {
-          if (data.socketId !== socket.id) {
-            console.log("Sincronizando slide...");
-            Reveal.setState(data);
-          }
+          console.log("📡 Señal recibida del Master!");
+          Reveal.setState(data);
         });
       }
     });
