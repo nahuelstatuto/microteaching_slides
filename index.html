@@ -61,7 +61,7 @@ const isMaster = new URLSearchParams(window.location.search).has("master");
 function initMultiplex() {
   const script = document.createElement("script");
   // Usamos el socket.io oficial del servidor para evitar conflictos
-  script.src = "https://reveal-multiplex.js.org/socket.io/socket.io.js";
+  script.src = "https://multiplex.up.railway.app/socket.io/socket.io.js";
   
   script.onload = () => {
     const socket = io.connect(MULTIPLEX_URL);
