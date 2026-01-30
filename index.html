@@ -44,7 +44,7 @@
       </aside>
     </section>
 
-    
+
   </div>
 </div>
 
@@ -52,46 +52,58 @@
 <script src="https://unpkg.com/reveal.js@4/plugin/notes/notes.js"></script>
 
 <script>
-  // CONFIGURACIÓN DE TU SERVIDOR RAILWAY
-  const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
-  const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
-  const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
+  // CONFIGURACIÓN
+const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
+const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
+const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
 
-  // Detectamos si entramos como master: index.html?master=true
-  const isMaster = new URLSearchParams(window.location.search).has("master");
+const isMaster = new URLSearchParams(window.location.search).has("master");
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const s = document.createElement("script");
-      s.src = src; s.async = true;
-      s.onload = resolve; s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
+async function startReveal() {
+  try {
+    // 1. Cargamos SOLO socket.io (esencial para la comunicación)
+    const s = document.createElement("script");
+    s.src = `${MULTIPLEX_URL}socket.io/socket.io.js`;
+    document.head.appendChild(s);
 
-  async function startReveal() {
-    try {
-      // Cargamos socket.io y el plugin correspondiente desde el servidor multiplex
-      await loadScript(`${MULTIPLEX_URL}socket.io/socket.io.js`);
-      await loadScript(isMaster ? `${MULTIPLEX_URL}master.js` : `${MULTIPLEX_URL}client.js`);
+    s.onload = () => {
+      const socket = io.connect(MULTIPLEX_URL);
 
+      // 2. Inicializamos Reveal
       Reveal.initialize({
         hash: true,
         slideNumber: true,
-        multiplex: {
-          secret: isMaster ? MULTIPLEX_SECRET : null,
-          id: MULTIPLEX_ID,
-          url: MULTIPLEX_URL
-        },
-        plugins: [ RevealNotes ]
+        plugins: [RevealNotes]
+      }).then(() => {
+        
+        if (isMaster) {
+          console.log("Modo MASTER activado");
+          // Notificar al servidor cada vez que cambies de slide
+          Reveal.on('slidechanged', event => {
+            socket.emit('multiplex-statechanged', {
+              id: MULTIPLEX_ID,
+              secret: MULTIPLEX_SECRET,
+              state: Reveal.getState()
+            });
+          });
+        } else {
+          console.log("Modo CLIENTE activado");
+          // Escuchar cambios del Master
+          socket.on(MULTIPLEX_ID, data => {
+            if (data.socketId !== socket.id) {
+              Reveal.setState(data.state);
+            }
+          });
+        }
       });
-    } catch (e) {
-      console.error("Error cargando multiplex, iniciando modo local:", e);
-      Reveal.initialize({ hash: true, plugins: [ RevealNotes ] });
-    }
+    };
+  } catch (e) {
+    console.error("Fallo en multiplex:", e);
+    Reveal.initialize({ hash: true, plugins: [RevealNotes] });
   }
+}
 
-  startReveal();
+startReveal();
 </script>
 </body>
 </html>
