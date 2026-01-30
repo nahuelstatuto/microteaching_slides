@@ -11,7 +11,7 @@
     .reveal { font-size: 34px; }
     .reveal .accent { color: var(--accent); }
     .reveal .box { border: 2px solid rgba(31,111,235,0.25); background: rgba(31,111,235,0.06); padding: 14px 18px; border-radius: 14px; }
-    /* ... (puedes mantener el resto de tus estilos CSS aquí) ... */
+    /* ... (puedes mantener el resto de tus estilos CSS aquï¿½) ... */
   </style>
 </head>
 <body>
@@ -21,26 +21,26 @@
 
     <section>
       <h1>k-means <span class="accent">en 10 minutos</span></h1>
-      <p class="muted">Aprendizaje no supervisado · Clustering · Visualización 2D</p>
+      <p class="muted">Aprendizaje no supervisado ï¿½ Clustering ï¿½ Visualizaciï¿½n 2D</p>
       <div class="box small">
-        Objetivo: entender la intuición del algoritmo (asignar ? actualizar) y verlo funcionar.
+        Objetivo: entender la intuiciï¿½n del algoritmo (asignar ? actualizar) y verlo funcionar.
       </div>
       <aside class="notes">
-        Arranque: 1 frase de propósito + gancho (datos sin etiquetas).
-        Menciona que habrá participación (brainstorming) y una demo visual.
+        Arranque: 1 frase de propï¿½sito + gancho (datos sin etiquetas).
+        Menciona que habrï¿½ participaciï¿½n (brainstorming) y una demo visual.
       </aside>
     </section>
 
     <section>
-      <h2>¿Qué haremos hoy?</h2>
+      <h2>ï¿½Quï¿½ haremos hoy?</h2>
       <ol>
         <li>ML en 60 segundos: <span class="accent">3 familias</span></li>
-        <li>Por qué el <span class="accent">no supervisado</span> importa</li>
-        <li>Construimos k-means <span class="accent">con el público</span></li>
-        <li>Demo 2D paso a paso + aplicación real</li>
+        <li>Por quï¿½ el <span class="accent">no supervisado</span> importa</li>
+        <li>Construimos k-means <span class="accent">con el pï¿½blico</span></li>
+        <li>Demo 2D paso a paso + aplicaciï¿½n real</li>
       </ol>
       <aside class="notes">
-        Mantén el encuadre. Esto reduce ansiedad en público no técnico.
+        Mantï¿½n el encuadre. Esto reduce ansiedad en pï¿½blico no tï¿½cnico.
       </aside>
     </section>
 
@@ -52,58 +52,61 @@
 <script src="https://unpkg.com/reveal.js@4/plugin/notes/notes.js"></script>
 
 <script>
-  // CONFIGURACIÓN
-const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
-const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
-const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
+  const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
+  const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
+  const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
 
-const isMaster = new URLSearchParams(window.location.search).has("master");
+  const isMaster = new URLSearchParams(window.location.search).has("master");
 
-async function startReveal() {
-  try {
-    // 1. Cargamos SOLO socket.io (esencial para la comunicación)
-    const s = document.createElement("script");
-    s.src = `${MULTIPLEX_URL}socket.io/socket.io.js`;
-    document.head.appendChild(s);
-
-    s.onload = () => {
+  // FunciÃ³n para cargar socket.io y arrancar
+  function initMultiplex() {
+    const script = document.createElement("script");
+    script.src = `${MULTIPLEX_URL}socket.io/socket.io.js`;
+    script.onload = () => {
       const socket = io.connect(MULTIPLEX_URL);
 
-      // 2. Inicializamos Reveal
       Reveal.initialize({
         hash: true,
         slideNumber: true,
-        plugins: [RevealNotes]
+        plugins: [ RevealNotes ]
       }).then(() => {
         
         if (isMaster) {
-          console.log("Modo MASTER activado");
-          // Notificar al servidor cada vez que cambies de slide
-          Reveal.on('slidechanged', event => {
-            socket.emit('multiplex-statechanged', {
+          console.log("ðŸš€ Modo MASTER activado");
+          
+          // FunciÃ³n para enviar el movimiento
+          const notify = () => {
+            const state = {
+              indexh: Reveal.getIndices().h,
+              indexv: Reveal.getIndices().v,
+              indexf: Reveal.getIndices().f,
               id: MULTIPLEX_ID,
-              secret: MULTIPLEX_SECRET,
-              state: Reveal.getState()
-            });
-          });
+              secret: MULTIPLEX_SECRET
+            };
+            socket.emit('multiplex-statechanged', state);
+          };
+
+          // Escuchar cambios de slide y de fragmentos
+          Reveal.on('slidechanged', notify);
+          Reveal.on('fragmentshown', notify);
+          Reveal.on('fragmenthidden', notify);
+
         } else {
-          console.log("Modo CLIENTE activado");
-          // Escuchar cambios del Master
-          socket.on(MULTIPLEX_ID, data => {
+          console.log("ðŸ“± Modo CLIENTE activado");
+          
+          socket.on(MULTIPLEX_ID, (data) => {
+            // Ignorar si el mensaje viene de nosotros mismos
             if (data.socketId !== socket.id) {
-              Reveal.setState(data.state);
+              Reveal.slide(data.indexh, data.indexv, data.indexf);
             }
           });
         }
       });
     };
-  } catch (e) {
-    console.error("Fallo en multiplex:", e);
-    Reveal.initialize({ hash: true, plugins: [RevealNotes] });
+    document.head.appendChild(script);
   }
-}
 
-startReveal();
+  initMultiplex();
 </script>
 </body>
 </html>
