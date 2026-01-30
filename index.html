@@ -51,62 +51,58 @@
 <script src="https://unpkg.com/reveal.js@4/dist/reveal.js"></script>
 <script src="https://unpkg.com/reveal.js@4/plugin/notes/notes.js"></script>
 
-<script>
-  const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
-  const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
-  const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
+<script>const MULTIPLEX_URL = "https://multiplex.up.railway.app/";
+const MULTIPLEX_ID = "250f42f4b411021cfc47399a0dbf659b1989fe0079d4277a44fedb6268fd8c9b";
+const MULTIPLEX_SECRET = "3d7977d36f96fbbac3ffd041f2f56905";
 
-  const isMaster = new URLSearchParams(window.location.search).has("master");
+const isMaster = new URLSearchParams(window.location.search).has("master");
 
-  // Función para cargar socket.io y arrancar
-  function initMultiplex() {
-    const script = document.createElement("script");
-    script.src = `${MULTIPLEX_URL}socket.io/socket.io.js`;
-    script.onload = () => {
-      const socket = io.connect(MULTIPLEX_URL);
+function initMultiplex() {
+  const script = document.createElement("script");
+  script.src = `${MULTIPLEX_URL}socket.io/socket.io.js`;
+  
+  script.onload = () => {
+    const socket = io.connect(MULTIPLEX_URL);
 
-      Reveal.initialize({
-        hash: true,
-        slideNumber: true,
-        plugins: [ RevealNotes ]
-      }).then(() => {
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      plugins: [ RevealNotes ]
+    }).then(() => {
+      
+      if (isMaster) {
+        console.log("🚀 MASTER: Enviando señales...");
         
-        if (isMaster) {
-          console.log("🚀 Modo MASTER activado");
+        const sendUpdate = () => {
+          const state = Reveal.getState();
+          // Añadimos el ID y Secret dentro del mismo objeto
+          state.id = MULTIPLEX_ID;
+          state.secret = MULTIPLEX_SECRET;
           
-          // Función para enviar el movimiento
-          const notify = () => {
-            const state = {
-              indexh: Reveal.getIndices().h,
-              indexv: Reveal.getIndices().v,
-              indexf: Reveal.getIndices().f,
-              id: MULTIPLEX_ID,
-              secret: MULTIPLEX_SECRET
-            };
-            socket.emit('multiplex-statechanged', state);
-          };
+          socket.emit('multiplex-statechanged', state);
+          // Por si el servidor usa el nombre de evento antiguo:
+          socket.emit('multiplex', state); 
+        };
 
-          // Escuchar cambios de slide y de fragmentos
-          Reveal.on('slidechanged', notify);
-          Reveal.on('fragmentshown', notify);
-          Reveal.on('fragmenthidden', notify);
+        Reveal.on('slidechanged', sendUpdate);
+        Reveal.on('fragmentshown', sendUpdate);
+        Reveal.on('fragmenthidden', sendUpdate);
+      } else {
+        console.log("📱 CLIENTE: Esperando señales...");
+        
+        socket.on(MULTIPLEX_ID, (data) => {
+          if (data.socketId !== socket.id) {
+            console.log("Sincronizando slide...");
+            Reveal.setState(data);
+          }
+        });
+      }
+    });
+  };
+  document.head.appendChild(script);
+}
 
-        } else {
-          console.log("📱 Modo CLIENTE activado");
-          
-          socket.on(MULTIPLEX_ID, (data) => {
-            // Ignorar si el mensaje viene de nosotros mismos
-            if (data.socketId !== socket.id) {
-              Reveal.slide(data.indexh, data.indexv, data.indexf);
-            }
-          });
-        }
-      });
-    };
-    document.head.appendChild(script);
-  }
-
-  initMultiplex();
+initMultiplex();
 </script>
 </body>
 </html>
