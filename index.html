@@ -216,21 +216,25 @@
       <div class="qa-grid">
         <div class="qa-q">
           <div class="fragment" data-fragment-index="1">¿Qué significa “mismo grupo”?</div>
-          <div class="fragment" data-fragment-index="2">¿Qué “representa” un grupo?</div>
-          <div class="fragment" data-fragment-index="3">Si tengo centros: ¿cómo asigno puntos?</div>
-          <div class="fragment" data-fragment-index="4">Y luego, ¿cómo actualizo centros?</div>
-          <div class="fragment" data-fragment-index="5">¿Cuándo paro?</div>
+          <div class="fragment" data-fragment-index="4">¿Qué “representa” un grupo?</div>
+          <div class="fragment" data-fragment-index="7">Si tengo centros: ¿cómo asigno puntos?</div>
+          <div class="fragment" data-fragment-index="10">Y luego, ¿cómo actualizo centros?</div>
+          <div class="fragment" data-fragment-index="13">¿Cuándo paro?</div>
 
           <!-- Trigger invisible: abre el popup de pausa (60s) -->
-          <span class="fragment pause-trigger" data-fragment-index="6" data-pause="40"></span>
+          <span class="fragment pause-trigger" data-fragment-index="2" data-pause="20"></span>
+          <span class="fragment pause-trigger" data-fragment-index="5" data-pause="20"></span>
+          <span class="fragment pause-trigger" data-fragment-index="8" data-pause="20"></span>
+          <span class="fragment pause-trigger" data-fragment-index="11" data-pause="20"></span>
+          <span class="fragment pause-trigger" data-fragment-index="14" data-pause="20"></span>
         </div>
 
         <div class="qa-a">
-          <div class="fragment" data-fragment-index="7"><b>cercanía</b> (distancia)</div>
-          <div class="fragment" data-fragment-index="8"><b>un centro</b> (centroide)</div>
+          <div class="fragment" data-fragment-index="3"><b>cercanía</b> (distancia)</div>
+          <div class="fragment" data-fragment-index="6"><b>un centro</b> (centroide)</div>
           <div class="fragment" data-fragment-index="9">al <b>más cercano</b></div>
-          <div class="fragment" data-fragment-index="10"><b>promedio</b> del grupo</div>
-          <div class="fragment" data-fragment-index="11">cuando <b>ya no cambie</b></div>
+          <div class="fragment" data-fragment-index="12"><b>promedio</b> del grupo</div>
+          <div class="fragment" data-fragment-index="15">cuando <b>ya no cambie</b></div>
 
           <div class="qa-spacer"></div>
         </div>
@@ -245,7 +249,7 @@
           <li style="margin-top: 25px;"><b>Inicializa</b> K centros</li>
           <li style="margin-top: 25px;"><b>Asigna</b> cada punto al centro más cercano</li>
           <li style="margin-top: 25px;"><b>Actualiza</b> cada centro como la media de su grupo</li>
-          <li style="margin-top: 25px;"><b>Repite</b> 2–3 hasta converger</li>
+          <li style="margin-top: 25px;"><b>Repite</b> hasta converger</li>
         </ol>
       </div>
       <p class="muted small">Patrón: <code class="inline">asignar ↔ actualizar</code></p>
@@ -304,10 +308,10 @@
     </section>
 
     <section>
-      <h2>Forms: ¿qué estamos midiendo?</h2>
+      <h2>Cuestionario a compañeros/as</h2>
 
       <p class="kpi fragment" data-fragment-index="1">
-        En esencia: <span class="accent"><b>estilos y actitudes</b></span> al enseñar con tecnología.
+        ¿Qué estamos midiendo?: En esencia, <span class="accent"><b>estilos y actitudes</b></span> al enseñar con tecnología.
       </p>
 
       <div class="two-col" style="margin-top: 10px;">
@@ -315,7 +319,7 @@
           <ul>
             <li class="fragment" data-fragment-index="2" style="font-size: 26px;"><b>Apertura</b> a explorar herramientas</li>
             <li class="fragment" data-fragment-index="3" style="font-size: 26px;"><b>Pragmatismo</b> vs perfeccionismo</li>
-            <li class="fragment" data-fragment-index="5" style="font-size: 26px;"><b>Transparencia</b>: confianza si entiendo “lo de debajo”</li>
+            <li class="fragment" data-fragment-index="5" style="font-size: 26px;"><b>Transparencia</b>: confianza si entiendo a fondo</li>
             <li class="fragment" data-fragment-index="6" style="font-size: 26px;">Estilo docente: <b>demos</b> + foco en el <b>“por qué”</b></li>
             <li class="fragment" data-fragment-index="7" style="font-size: 26px;">Actitud hacia <b>IA generativa</b> (con objetivo pedagógico)</li>
           </ul>
@@ -328,7 +332,7 @@
         <div class="card fragment" data-fragment-index="9">
           <p><b>Idea</b></p>
           <p class="small">
-            “No buscamos ‘mejor’ o ‘peor’” → buscamos <span class="accent"><b>perfiles</b></span>
+            No buscamos ‘mejor’ o ‘peor’ → buscamos <span class="accent"><b>perfiles</b></span>
             para entender cómo se enseña con tech.
           </p>
           <hr>
@@ -403,7 +407,7 @@
       <div class="box">
         <ul style="margin:0;">
           <li style="margin-top: 25px;"><b>k-means = iterar</b>: asignar → actualizar → repetir.</li>
-          <li style="margin-top: 25px;"><b>K es una decisión</b>: usa elbow + criterio del dominio.</li>
+          <li style="margin-top: 25px;"><b>K es una decisión</b>: usa elbow.</li>
           <li style="margin-top: 25px;"><b>Útil para explorar</b>: descubrir perfiles / estructura sin etiquetas.</li>
         </ul>
       </div>
