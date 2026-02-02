@@ -376,14 +376,3 @@
   margin-top: 8px;
   padding: 10px 12px;
 }
-
-
-.reveal section.title-slide{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0px;   /* ajusta 12–24px */
-  top: 200px;
-  text-align: center;
-  margin: 0;
-}
