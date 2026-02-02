@@ -15,13 +15,9 @@ Incluye las diapositivas, assets (imágenes/figuras) y scripts de apoyo.
 
 ## 📁 Estructura sugerida
 
-> Ajusta estos nombres si tu repo tiene otra estructura.
-
 - `index.html` — entrada principal de las slides
-- `css/` — estilos
-- `js/` — scripts
+- `styles.css` — estilos
 - `assets/` — imágenes, figuras, iconos, etc.
-- `plugins/` — plugins de Reveal.js (notes, highlight, markdown, etc.)
 
 ---
 
