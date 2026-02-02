@@ -6,44 +6,420 @@
   <title>Microteaching -- Nahuel Statuto</title>
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/reveal.css">
   <link rel="stylesheet" href="https://unpkg.com/reveal.js@4/dist/theme/white.css" id="theme">
-  <style>
-    :root { --accent: #1f6feb; }
-    .reveal { font-size: 34px; }
-    .reveal .accent { color: var(--accent); }
-    .reveal .box { border: 2px solid rgba(31,111,235,0.25); background: rgba(31,111,235,0.06); padding: 14px 18px; border-radius: 14px; }
-    /* ... (puedes mantener el resto de tus estilos CSS aqu�) ... */
-  </style>
+  <link rel="stylesheet" href="./styles.css">
 </head>
+
+<div id="pauseModal" class="pause-drawer" aria-hidden="true">
+  <div class="pause-card" role="dialog" aria-modal="false" aria-label="Tiempo para pensar">
+    <div class="pause-title">Tiempo para pensar</div>
+
+    <div class="pause-timer" aria-label="Cuenta atrás">
+      <svg viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(17,24,39,0.12)" stroke-width="10"></circle>
+        <circle id="pauseRing" cx="60" cy="60" r="52" fill="none"
+                stroke="rgba(31,111,235,0.9)" stroke-width="10"
+                stroke-linecap="round"
+                stroke-dasharray="326.7256"
+                stroke-dashoffset="0"></circle>
+      </svg>
+
+      <div class="pause-seconds">
+        <div>
+          <div id="pauseSeconds">60</div>
+          <div class="pause-sub">segundos</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pause-hint muted small">
+      Lee las preguntas y piensa una respuesta.
+    </div>
+
+    <div class="pause-actions">
+      <button id="pauseCloseBtn" class="pause-btn">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+
+
 <body>
 <div class="reveal">
   <div class="slides">
-    <section><h1>k-means <span class="accent">en 10 minutos</span></h1></section>
+    <section class="title-slide">
+      <h1>k-means <span class="accent">en 10 minutos</span></h1>
+      <p class="muted">Aprendizaje no supervisado y Clustering</p>
+
+      <div class="box tiny">
+        OBJETIVO: Comprender la lógica del algoritmo y aplicar esa comprensión para ejecutarlo/observar su funcionamiento en un ejemplo.
+      </div>
+
+      <p class="tiny muted" style="left: 0px; right: 0px; bottom: 18px; position: absolute; margin: 0px;;">Nahuel Statuto</p>
+
+      <aside class="notes">
+        Arranque: 1 frase de propósito + gancho (datos sin etiquetas).
+        Menciona que habrá participación (brainstorming) y una demo visual.
+      </aside>
+    </section>
+
+
 
     <section>
-      <h1>k-means <span class="accent">en 10 minutos</span></h1>
-      <p class="muted">Aprendizaje no supervisado � Clustering � Visualizaci�n 2D</p>
-      <div class="box small">
-        Objetivo: entender la intuici�n del algoritmo (asignar ? actualizar) y verlo funcionar.
+      <h2>¿Qué haremos hoy?</h2>
+
+      <ol style="margin-top: 18px;">
+        <li style="margin-bottom: 25px;">Machine Learning (ML) en 60 segundos: <span class="accent">3 familias</span></li>
+        <li style="margin-bottom: 25px;">Por qué el <span class="accent">ML no supervisado</span> importa</li>
+        <li style="margin-bottom: 25px;">Construimos k-means <span class="accent">con vuestra ayudo</span></li>
+        <li>Demo paso a paso + aplicación real (cuestionario)</li>
+      </ol>
+
+      <aside class="notes">
+        Mantén el encuadre. Esto reduce ansiedad en público no técnico.
+      </aside>
+    </section>
+
+
+    <section>
+      <h2>Un poco de motivación</h2>
+
+      <div class="two-col">
+        <div>
+          <p class="kpi">
+            <span class="accent">Caso típico:</span> tenemos datos, pero no “respuestas correctas”.
+          </p>
+
+          <p class="muted small">Ejemplos rápidos:</p>
+          <ul>
+            <li style="font-size: 20px; margin-bottom: 25px;">Interacción en el campus virtual</li>
+            <li style="font-size: 20px; margin-bottom: 25px;">Temas en artículos / abstracts</li>
+            <li style="font-size: 20px; margin-bottom: 25px;">Respuestas abiertas de encuestas (¡como hoy!)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><b>Idea clave</b></p>
+          <p class="small">Antes de predecir, muchas veces necesitamos <span class="accent">explorar y agrupar</span>.</p>
+          <p class="small muted">Etiquetar datos suele ser caro, lento o ambiguo.</p>
+          <hr>
+          <p class="small">Resultado: <span class="accent"><b>clustering</b></span> para descubrir grupos y perfiles.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <section>
+      <h2>Machine Learning (muy general)</h2>
+      <div class="box">
+        ML = aprender patrones a partir de datos para <b>predecir</b> o <b>descubrir estructura</b>,
+        sin escribir reglas a mano para cada caso.
       </div>
       <aside class="notes">
-        Arranque: 1 frase de prop�sito + gancho (datos sin etiquetas).
-        Menciona que habr� participaci�n (brainstorming) y una demo visual.
+        Evita jerga. “Modelo” = mecanismo que resume patrones en datos.
       </aside>
     </section>
 
     <section>
-      <h2>�Qu� haremos hoy?</h2>
-      <ol>
-        <li>ML en 60 segundos: <span class="accent">3 familias</span></li>
-        <li>Por qu� el <span class="accent">no supervisado</span> importa</li>
-        <li>Construimos k-means <span class="accent">con el p�blico</span></li>
-        <li>Demo 2D paso a paso + aplicaci�n real</li>
-      </ol>
+      <h2>3 familias de ML</h2>
+      <p class="muted small" style="margin-top:-6px;">
+        Diferencia clave: <span class="accent"><b>qué señal de aprendizaje</b></span> recibe el algoritmo.
+      </p>
+
+      <div class="three-col">
+        <div class="card">
+          <h3 class="accent">Supervised</h3>
+          <p class="small"><b>Aprende a predecir</b> a partir de ejemplos con etiqueta.</p>
+          <p class="xs muted">Señal: respuesta "correcta"</p>
+        </div>
+
+        <div class="card">
+          <h3 class="accent">Unsupervised</h3>
+          <p class="small"><b>Descubre estructura</b> sin etiquetas.</p>
+          <p class="xs muted">Señal: patrones en los datos</p>
+        </div>
+
+        <div class="card">
+          <h3 class="accent">Reinforcement</h3>
+          <p class="small"><b>Decide acciones</b> para maximizar recompensa.</p>
+          <p class="xs muted">Señal: recompensa</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>¿Por qué <span class="accent">no supervisado</span>?</h2>
+      <ul>
+        <li class="fragment">Porque <b>no siempre</b> hay etiquetas</li>
+        <li class="fragment">Porque ayuda a <b>explorar</b> datos y generar hipótesis</li>
+        <li class="fragment">Porque permite <b>segmentar</b> (perfiles, temas, grupos)</li>
+        <li class="fragment">Porque detecta <b>anomalías</b> (lo raro)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Clustering</h2>
+
+      <div class="two-col">
+        <div>
+          <p class="kpi">
+            <span class="accent">Idea:</span> <b>cosas parecidas van juntas</b>.
+          </p>
+
+          <ul>
+            <li style="font-size: 26px;">Segmentación de perfiles (estudiantes, clientes…)</li>
+            <li style="font-size: 26px;">Agrupar comportamientos (uso del campus virtual)</li>
+            <li style="font-size: 26px;">Descubrir temas en textos (abstracts, respuestas abiertas)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <p><b>Pregunta clave</b></p>
+          <p class="small">
+            ¿Qué significa <span class="accent">“parecido”</span>?
+          </p>
+          <p class="small muted">
+            Depende de las variables que elegimos y de una <b>distancia</b>.
+          </p>
+
+          <hr>
+
+          <p class="small">
+            Hoy: construiremos <span class="accent"><b>k-means</b></span>.
+          </p>
+        </div>
+      </div>
+
       <aside class="notes">
-        Mant�n el encuadre. Esto reduce ansiedad en p�blico no t�cnico.
+        “Parecido” depende de variables y una noción de distancia. Haz 1 ejemplo rápido: distancia en 2D.
       </aside>
     </section>
 
+
+    <section>
+      <h2>Problema</h2>
+
+      <p class="fragment">Tenemos puntos “sin etiqueta”. Queremos agruparlos en <b>K</b> grupos.</p>
+      <p class="muted small fragment">Preguntas: ¿qué es un grupo? ¿cómo lo representamos?</p>
+
+      <img class="figure figure--small fragment"
+          src="assets/kmeans_scatter.png"
+          alt="Puntos en 2D sin etiquetas">
+
+      <aside class="notes">
+        Aquí empieza el brainstorming. “Imaginad que esto son perfiles…”
+      </aside>
+    </section>
+
+
+    <section>
+      <h2>Brainstorming: creando el algoritmo</h2>
+
+      <div class="qa-grid">
+        <div class="qa-q">
+          <div class="fragment" data-fragment-index="1">¿Qué significa “mismo grupo”?</div>
+          <div class="fragment" data-fragment-index="2">¿Qué “representa” un grupo?</div>
+          <div class="fragment" data-fragment-index="3">Si tengo centros: ¿cómo asigno puntos?</div>
+          <div class="fragment" data-fragment-index="4">Y luego, ¿cómo actualizo centros?</div>
+          <div class="fragment" data-fragment-index="5">¿Cuándo paro?</div>
+
+          <!-- Trigger invisible: abre el popup de pausa (60s) -->
+          <span class="fragment pause-trigger" data-fragment-index="6" data-pause="40"></span>
+        </div>
+
+        <div class="qa-a">
+          <div class="fragment" data-fragment-index="7"><b>cercanía</b> (distancia)</div>
+          <div class="fragment" data-fragment-index="8"><b>un centro</b> (centroide)</div>
+          <div class="fragment" data-fragment-index="9">al <b>más cercano</b></div>
+          <div class="fragment" data-fragment-index="10"><b>promedio</b> del grupo</div>
+          <div class="fragment" data-fragment-index="11">cuando <b>ya no cambie</b></div>
+
+          <div class="qa-spacer"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <section>
+      <h2>k-means (en una slide)</h2>
+      <div class="box">
+        <ol>
+          <li style="margin-top: 25px;"><b>Inicializa</b> K centros</li>
+          <li style="margin-top: 25px;"><b>Asigna</b> cada punto al centro más cercano</li>
+          <li style="margin-top: 25px;"><b>Actualiza</b> cada centro como la media de su grupo</li>
+          <li style="margin-top: 25px;"><b>Repite</b> 2–3 hasta converger</li>
+        </ol>
+      </div>
+      <p class="muted small">Patrón: <code class="inline">asignar ↔ actualizar</code></p>
+      <aside class="notes">
+        Esta es la “takeaway” del microteaching.
+      </aside>
+    </section>
+
+    <section>
+      <h2>Demo 2D: iteraciones</h2>
+
+      <img class="figure figure--gif"
+          src="assets/kmeans_iter.gif"
+          alt="Animación k-means iteraciones">
+
+      <p class="muted small">Observa: los centros se mueven → los grupos se estabilizan.</p>
+
+      <aside class="notes">
+        Narra 1 ciclo: asigno → muevo centros → repito.
+      </aside>
+    </section>
+
+
+    <section>
+      <h2>Elegir K</h2>
+
+      <p class="kpi fragment" data-fragment-index="1">
+        Pregunta: <span class="accent"><b>¿cómo elegimos K?</b></span>
+      </p>
+
+      <div class="two-col" style="margin-top: 6px;">
+        <div>
+          <ul>
+            <li class="fragment" data-fragment-index="2" style="margin-top: 30px;">K es una decisión del analista</li>
+
+            <li class="fragment" data-fragment-index="3" style="margin-top: 30px;">Heurística: “elbow” (codo)</li>
+
+            <p class="muted small fragment" data-fragment-index="3" style="margin: 10px 0 0 0;">
+              Probamos varios <b>K</b> y medimos el error (<span class="accent">inercia</span>).
+              Elegimos el <b>“codo”</b>: donde la mejora empieza a ser pequeña.
+            </p>
+          </ul>
+
+          <p class="muted small fragment" data-fragment-index="5">
+            Ojo: la inicialización puede influir.
+          </p>
+        </div>
+
+        <div>
+          <img class="figure figure--small fragment" style="margin-top: 60px;"
+              data-fragment-index="6"
+              src="assets/kmeans_elbow.png"
+              alt="Elbow method">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Forms: ¿qué estamos midiendo?</h2>
+
+      <p class="kpi fragment" data-fragment-index="1">
+        En esencia: <span class="accent"><b>estilos y actitudes</b></span> al enseñar con tecnología.
+      </p>
+
+      <div class="two-col" style="margin-top: 10px;">
+        <div>
+          <ul>
+            <li class="fragment" data-fragment-index="2" style="font-size: 26px;"><b>Apertura</b> a explorar herramientas</li>
+            <li class="fragment" data-fragment-index="3" style="font-size: 26px;"><b>Pragmatismo</b> vs perfeccionismo</li>
+            <li class="fragment" data-fragment-index="5" style="font-size: 26px;"><b>Transparencia</b>: confianza si entiendo “lo de debajo”</li>
+            <li class="fragment" data-fragment-index="6" style="font-size: 26px;">Estilo docente: <b>demos</b> + foco en el <b>“por qué”</b></li>
+            <li class="fragment" data-fragment-index="7" style="font-size: 26px;">Actitud hacia <b>IA generativa</b> (con objetivo pedagógico)</li>
+          </ul>
+
+          <p class="muted small fragment" data-fragment-index="8">
+            Nota: <b>n=21</b>. Lectura <b>exploratoria</b> (tipologías, no conclusiones fuertes).
+          </p>
+        </div>
+
+        <div class="card fragment" data-fragment-index="9">
+          <p><b>Idea</b></p>
+          <p class="small">
+            “No buscamos ‘mejor’ o ‘peor’” → buscamos <span class="accent"><b>perfiles</b></span>
+            para entender cómo se enseña con tech.
+          </p>
+          <hr>
+          <p class="small muted">
+            Ahora: clustering (k-means) sobre respuestas.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide-clusters">
+      <h2>Clustering del cuestionario</h2>
+
+      <p class="kpi fragment" data-fragment-index="1">
+        Pregunta: <span class="accent"><b>¿cuántos perfiles</b></span> describen al grupo?
+      </p>
+
+      <div class="two-col" style="margin-top: 6px;">
+        <!-- IZQUIERDA -->
+        <div class="cluster-text">
+
+          <div class="fragment" data-fragment-index="2">
+            <p style="text-align:left;"><b>K=2</b> (6 / 15)</p>
+            <ul>
+              <li><b>Pragmático/a + demos</b> (mayoría)</li>
+              <li><b>Analítico/a</b> (minoría)</li>
+            </ul>
+          </div>
+
+          <div class="fragment" data-fragment-index="3">
+            <p style="text-align:left;"><b>K=3</b> (6 / 7 / 8)</p>
+            <ul>
+              <li><b>Automatizador/a</b> (debug + improvisar)</li>
+              <li><b>Pragmático/a</b> (“simple que funciona”)</li>
+              <li><b>Analítico/a</b> (menos quick-win)</li>
+            </ul>
+            <div class="box tiny" style="margin-top: 10px;">
+              Lectura práctica: <b>K=3</b> = buen equilibrio.
+            </div>
+          </div>
+
+          <div class="fragment" data-fragment-index="4">
+            <p style="text-align:left;"><b>K=4</b> (2 / 7 / 11 / 1)</p>
+            <ul>
+              <li>Se mantiene “Automatizador/a”</li>
+              <li>Surgen grupos <b>muy pequeños</b> → ojo</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- DERECHA -->
+        <div>
+          <div class="img-stack">
+            <img class="fragment figure" data-fragment-index="2"
+                src="assets/cuestionario/clusters_pca_k2.png"
+                alt="PCA 2D + k-means (K=2)">
+            <img class="fragment figure" data-fragment-index="3"
+                src="assets/cuestionario/clusters_pca_k3.png"
+                alt="PCA 2D + k-means (K=3)">
+            <img class="fragment figure" data-fragment-index="4"
+                src="assets/cuestionario/clusters_pca_k4.png"
+                alt="PCA 2D + k-means (K=4)">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cierre: ideas clave</h2>
+
+      <div class="box">
+        <ul style="margin:0;">
+          <li style="margin-top: 25px;"><b>k-means = iterar</b>: asignar → actualizar → repetir.</li>
+          <li style="margin-top: 25px;"><b>K es una decisión</b>: usa elbow + criterio del dominio.</li>
+          <li style="margin-top: 25px;"><b>Útil para explorar</b>: descubrir perfiles / estructura sin etiquetas.</li>
+        </ul>
+      </div>
+
+      <aside class="notes">
+        Cierra con 1 frase: “Hoy no buscamos ‘la verdad’, buscamos una primera estructura útil.”
+        Agradece y abre preguntas.
+      </aside>
+    </section>
+
+    <section class="vcenter" style="text-align:center;">
+      <h1>Gracias.</h1>
+      <p class="muted" style="margin-top: 120px; font-size: 22px;">Con esto y un <span class="accent">bizcocho</span> hasta mañana a las <span class="accent">8</span>.</p>
+      <p class="muted" style="font-size: 22px;">Whit this and <span class="accent">a cake</span> until tomorrow at <span class="accent">8</span>.</p>
+    </section>
 
   </div>
 </div>
@@ -99,5 +475,94 @@ function initMultiplex() {
 
 initMultiplex();
 </script>
+
+<script>
+(function(){
+  const modal = document.getElementById('pauseModal');
+  const secondsEl = document.getElementById('pauseSeconds');
+  const ring = document.getElementById('pauseRing');
+  const closeBtn = document.getElementById('pauseCloseBtn');
+
+  const R = 52;
+  const C = 2 * Math.PI * R;
+  ring.setAttribute('stroke-dasharray', String(C));
+
+  let timer = null;
+  let remaining = 0;
+  let total = 0;
+
+  function showPause(seconds){
+    total = seconds;
+    remaining = seconds;
+
+    secondsEl.textContent = String(remaining);
+    ring.setAttribute('stroke-dashoffset', '0');
+
+    modal.classList.add('is-visible');
+    modal.setAttribute('aria-hidden', 'false');
+
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => {
+      remaining -= 1;
+
+      secondsEl.textContent = String(Math.max(remaining, 0));
+      const progress = (total - Math.max(remaining, 0)) / total;
+      ring.setAttribute('stroke-dashoffset', String(C * progress));
+
+      if (remaining <= 0){
+        hidePause();
+      }
+    }, 1000);
+  }
+
+  function hidePause(){
+    if (timer){
+      clearInterval(timer);
+      timer = null;
+    }
+    modal.classList.remove('is-visible');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  // Cerrar con botón
+  closeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    hidePause();
+  });
+
+  // Cerrar con clic fuera (overlay)
+  //modal.addEventListener('click', (e) => {
+  //  if (e.target === modal) hidePause();
+  //});
+
+  // Cerrar con ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-visible')){
+      hidePause();
+    }
+  });
+
+  // Si cambias de slide, cerramos seguro
+  Reveal.on('slidechanged', hidePause);
+
+  Reveal.on('fragmentshown', (event) => {
+    const f = event.fragment;
+    if (f && f.classList.contains('pause-trigger')){
+      const seconds = parseInt(f.dataset.pause || '60', 10);
+      showPause(Number.isFinite(seconds) ? seconds : 60);
+    }
+  });
+
+  Reveal.on('fragmenthidden', (event) => {
+    const f = event.fragment;
+    if (f && f.classList.contains('pause-trigger')){
+      hidePause();
+    }
+  });
+})();
+</script>
+
+
+
 </body>
 </html>

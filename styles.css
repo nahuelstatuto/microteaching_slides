@@ -1,0 +1,389 @@
+:root{
+  --accent:#1f6feb;
+  --text:#111827;
+  --muted:#6b7280;
+  --border: rgba(17,24,39,0.12);
+  --shadow: 0 12px 28px rgba(17,24,39,0.12);
+  --radius: 16px;
+}
+
+/* Base */
+.reveal{
+  font-size:34px;
+  color: var(--text);
+}
+.reveal .accent{ color: var(--accent); }
+.reveal .muted{ color: var(--muted); }
+.reveal .small{ font-size:0.78em; }
+.reveal .tiny{ font-size:0.62em; }
+.reveal strong, .reveal b{ font-weight:800; }
+
+/* Espaciado general más agradable */
+.reveal p{ margin: 0.35em 0; line-height: 1.22; }
+.reveal h1, .reveal h2, .reveal h3{ letter-spacing: -0.02em; }
+.reveal h2{ margin-bottom: 0.55em; }
+
+/* Listas: menos apretadas */
+.reveal ul, .reveal ol{ margin-top: 0.35em; }
+.reveal ul li, .reveal ol li{ margin: 0.35em 0; }
+.reveal ol{ padding-left: 1.1em; }
+.reveal ul{ padding-left: 1.1em; }
+
+/* Caja destacada */
+.reveal .box{
+  border: 2px solid rgba(31,111,235,0.25);
+  background: rgba(31,111,235,0.06);
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  margin-top: 18px;
+}
+
+/* KPI / frase principal de la izquierda */
+.reveal .kpi{
+  font-size: 0.92em;
+  line-height: 1.18;
+  margin: 0 0 0.6em 0;
+}
+
+/* Layout en 2 columnas (responsive) */
+.reveal .two-col{
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 28px;
+  align-items: start;
+  margin-top: 10px;
+}
+/* Para pantallas pequeñas o si Reveal reduce ancho */
+@media (max-width: 900px){
+  .reveal .two-col{
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+/* Tarjeta */
+.reveal .card{
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+/* Separador suave */
+.reveal hr{
+  border: none;
+  border-top: 1px solid rgba(17,24,39,0.16);
+  margin: 18px 0;
+}
+
+/* Utilidad: centrado vertical ligero (si lo necesitas en alguna slide) */
+.reveal .vcenter{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Firma al pie */
+.reveal .signature{
+  margin-top: 28px;
+  font-size: 0.62em;
+  color: var(--muted);
+}
+
+/* Texto extra pequeño */
+.reveal .xs{ font-size: 0.68em; }
+
+/* Layout en 3 columnas */
+.reveal .three-col{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+@media (max-width: 1100px){
+  .reveal .three-col{
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* Ajuste fino para títulos dentro de cards */
+.reveal .card h3{
+  margin: 0 0 10px 0;
+  font-size: 0.95em;
+}
+/* Figuras: que respeten el alto del slide */
+.reveal img.figure{
+  display: block;
+  margin: 16px auto 0;
+  max-width: 90%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Variante más pequeña para slides con texto */
+.reveal img.figure--small{
+  max-height: 52vh; /* ajusta entre 38–48vh según tu proyector */
+}
+
+/* Q&A en 2 columnas, alineado por filas */
+.reveal .qa-grid{
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 28px;
+  align-items: left;
+  margin-top: 10px;
+  font-size: 0.85em; /* un pelín más compacto para que no se salga */
+}
+
+.reveal .qa-q > div,
+.reveal .qa-a > div{
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(17,24,39,0.10);
+  line-height: 1.15;
+}
+
+.reveal .qa-a{
+  padding-left: 16px;
+  border-left: 2px solid rgba(31,111,235,0.18);
+}
+
+.reveal .qa-pause{
+  border-bottom: none !important;
+  padding-top: 14px !important;
+}
+
+.reveal .qa-spacer{
+  border-bottom: none !important;
+  padding-top: 14px;
+}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .reveal .qa-grid{
+    grid-template-columns: 1fr;
+    gap: 14px;
+    font-size: 0.92em;
+  }
+  .reveal .qa-a{
+    border-left: none;
+    padding-left: 0;
+    border-top: 2px solid rgba(31,111,235,0.18);
+    padding-top: 10px;
+  }
+}
+/* Trigger invisible del fragmento 6 */
+.reveal .pause-trigger{ display:none; }
+
+/* Overlay popup */
+/* Panel lateral derecho (no tapa las preguntas) */
+.pause-drawer{
+  position: fixed;
+  top: 350px;               /* separa del título/menú */
+  right: 250px;
+  width: min(420px, 34vw);
+  z-index: 9999;
+
+  display: none;           /* hidden por defecto */
+}
+
+.pause-drawer.is-visible{ display: block; }
+
+.pause-drawer .pause-card{
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(17,24,39,0.12);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(17,24,39,0.18);
+  padding: 18px 18px 16px;
+  text-align: center;
+}
+
+/* Timer un poco más compacto para panel */
+.pause-drawer .pause-timer{
+  width: 150px;
+  height: 150px;
+  margin: 8px auto 0;
+}
+
+.pause-drawer .pause-seconds{
+  font-size: 0.95em;
+}
+
+/* Botón */
+.pause-actions{
+  margin-top: 12px;
+  display:flex;
+  justify-content:center;
+}
+.pause-btn{
+  border: 1px solid rgba(17,24,39,0.18);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.70em;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(17,24,39,0.10);
+}
+
+/* En pantallas pequeñas: lo ponemos abajo centrado para no comer ancho */
+@media (max-width: 1100px){
+  .pause-drawer{
+    top: auto;
+    bottom: 24px;
+    right: 24px;
+    left: 24px;
+    width: auto;
+  }
+}
+
+.pause-card{
+  width: min(560px, 86vw);
+  background: #fff;
+  border: 1px solid rgba(17,24,39,0.12);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(17,24,39,0.22);
+  padding: 22px 22px 18px;
+  text-align: center;
+}
+
+.pause-title{
+  font-size: 0.95em;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.pause-hint{
+  margin-top: 12px;
+}
+
+/* Timer circular */
+.pause-timer{
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 10px auto 0;
+}
+
+.pause-timer svg{
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.pause-seconds{
+  position: absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 900;
+  font-size: 2.2em;
+  color: var(--text);
+}
+
+.pause-sub{
+  font-size: 0.7em;
+  color: var(--muted);
+  margin-top: -6px;
+}
+.pause-actions{
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.pause-btn{
+  border: 1px solid rgba(17,24,39,0.18);
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.70em;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(17,24,39,0.10);
+}
+
+.pause-btn:hover{
+  transform: translateY(-1px);
+}
+
+.pause-btn:active{
+  transform: translateY(0px);
+}
+/* GIFs: más bajos para que no se salgan */
+.reveal img.figure--gif{
+  max-height: 52vh;   /* prueba 44–52vh según tu proyector */
+  max-width: 92%;
+  height: auto;
+  object-fit: contain;
+}
+.reveal img.figure--small{
+  max-height: 40vh;   /* ideal para que entre junto a texto */
+  max-width: 92%;
+  height: auto;
+  object-fit: contain;
+}
+/* Stack de imágenes: se superponen y Reveal controla visibilidad con .visible */
+.reveal .img-stack{
+  position: relative;
+  width: 100%;
+  height: 48vh;          /* ajusta 48–56vh según tu proyector */
+  margin-top: 8px;
+}
+
+.reveal .img-stack img{
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: 96%;
+  max-height: 52vh;
+  height: auto;
+  object-fit: contain;
+
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.reveal .img-stack img.visible{
+  opacity: 1;
+  transform: scale(1);
+}
+/* Solo para esta slide: más ancho a la izquierda y texto más compacto */
+.reveal section.slide-clusters .two-col{
+  grid-template-columns: 1.55fr 0.85fr; /* más espacio para texto */
+  gap: 22px;
+}
+
+.reveal section.slide-clusters .cluster-text{
+  font-size: 22px;      /* reduce tamaño SOLO en esta slide */
+}
+
+.reveal section.slide-clusters .cluster-text p{
+  margin: 0.25em 0 0.15em;
+  line-height: 1.12;
+}
+
+.reveal section.slide-clusters .cluster-text ul li{
+  margin: 0.22em 0;       /* listas más compactas */
+}
+
+.reveal section.slide-clusters .box{
+  margin-top: 8px;
+  padding: 10px 12px;
+}
+
+
+.reveal section.title-slide{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0px;   /* ajusta 12–24px */
+  top: 200px;
+  text-align: center;
+  margin: 0;
+}
